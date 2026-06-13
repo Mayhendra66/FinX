@@ -119,16 +119,17 @@
 
             <section class="bg-[#0A0B0D] border border-[#1E2025] rounded-2xl p-6 flex flex-col gap-6">
     <header class="flex items-center gap-3 pb-4 border-b border-[#1E2025]">
-        <div class="p-2 bg-[#0052ff]/10 border border-[#0052ff]/20 rounded-lg text-[#b7c4ff]">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m-5 4a5 5 0 0110 0v2a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1H3a1 1 0 01-1-1v-3a1 1 0 011-1h3a1 1 0 001-1v-2a5 5 0 0110 0z" />
-            </svg>
-        </div>
-        <div>
-            <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">Update Password</h3>
-            <p class="text-[10px] text-[#c3c5d9]/50">Konfigurasi ulang kata sandi otentikasi masuk ke platform Anda.</p>
-        </div>
-    </header>
+    <div class="p-2 bg-[#0052ff]/10 border border-[#0052ff]/20 rounded-lg text-[#b7c4ff]">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+    </div>
+    <div>
+        <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">Update Password</h3>
+        <p class="text-[10px] text-[#c3c5d9]/50">Konfigurasi ulang kata sandi otentikasi masuk ke platform Anda.</p>
+    </div>
+</header>
 
     <form method="post" action="{{ route('password.update') }}" class="flex flex-col gap-4">
         @csrf

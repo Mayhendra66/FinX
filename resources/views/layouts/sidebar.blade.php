@@ -89,10 +89,11 @@
       <span>Cicilan</span>
     </a>
 
-    <a id="menu_item_saving_goals" href="#" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-semibold text-sm border-l-4 {{ request()->routeIs('saving_goals.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
-  <svg class="w-5 h-5 {{ request()->routeIs('saving_goals.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-    <path d="M19 5c-1.5 0-2.8 1.4-3 2-2.5-.5-5.5-.5-12 0C2.6 8.5 2 10.6 2 13c0 4.1 3.2 6 7 6l1.2-2.5M10 10c0-1.5 1-2.5 2-2.5s2 1 2 2.5-1 2.5-2 2.5-2-1-2-2.5z"></path>
-    <path d="M17 19.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
+    <a id="menu_item_saving_goals" href="{{ route('saving-goals.index') }}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-semibold text-sm border-l-4 {{ request()->routeIs('saving-goals.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
+  <svg class="w-5 h-5 {{ request()->routeIs('saving-goals.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <circle cx="12" cy="12" r="6"></circle>
+    <circle cx="12" cy="12" r="1").></circle>
   </svg>
   <span>Saving Goals</span>
 </a>

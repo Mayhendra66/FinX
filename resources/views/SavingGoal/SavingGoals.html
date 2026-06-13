@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saving Goals - KeuanganKU</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: '#0052ff',
+            darkBg: '#0A0B0D',
+            darkBorder: '#1E2025',
+            inputBg: '#121414',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- SweetAlert2 CDN & Theme Styling -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Kustomisasi gaya input SweetAlert agar menyatu dengan Tema Dark Slate */
+    .swal2-popup {
+      border: 1px solid #1E2025 !important;
+      border-radius: 16px !important;
+    }
+  </style>
+</head>
+<body class="bg-[#020203] text-slate-100 min-h-screen p-4 md:p-8">
+
+  <!-- ========================================================================= -->
+  <!-- #MAIN - CONTEXT UTAMA HALAMAN (Hanya salin bagian ini untuk disisipkan)  -->
+  <!-- ========================================================================= -->
+  <main class="max-w-6xl mx-auto space-y-8">
+    
+    <!-- Header Page -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <span class="p-2 rounded-lg bg-blue-500/10 text-blue-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </span>
+          <h1 class="text-2xl font-extrabold tracking-tight text-white">Target Impian & Tabungan</h1>
+        </div>
+        <p class="text-xs text-slate-400">Kelola impian masa depan, simpan modal terpisah, dan pantau kemajuan target keuangan Anda.</p>
+      </div>
+      
+      <!-- Ringkasan Singkat Stat -->
+      <div class="flex gap-4">
+        <div class="bg-[#0A0B0D] border border-[#1E2025] rounded-xl p-3 px-5 flex flex-col justify-center">
+          <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Total Terkumpul</span>
+          <span class="text-base font-bold text-emerald-400 font-mono">Rp 12.850.000</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Grid Utama: Create Form & Goals List -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      
+      <!-- 1. #CREATE - FORM TAMBAH GOAL (Kiri) -->
+      <section class="bg-[#0A0B0D] border border-[#1E2025] rounded-2xl p-6 space-y-5">
+        <div class="border-b border-white/5 pb-3">
+          <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <span class="inline-block w-2 h-2 rounded-full bg-blue-500"></span>
+            Tambah Rencana Impian Baru
+          </h2>
+          <p class="text-[11px] text-slate-400">Atur anggaran impian Anda secara konsisten</p>
+        </div>
+
+        <form id="create_goal_form" class="space-y-4" onsubmit="event.preventDefault(); handleCreateGoal();">
+          
+          <!-- Nama Impian -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-semibold text-slate-300" for="goal_name">Nama Impian *</label>
+            <input 
+              id="goal_name" 
+              type="text" 
+              placeholder="Contoh: Beli Macbook Pro M4" 
+              required
+              class="w-full bg-[#121414] border border-[#2d2f39] text-white rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            >
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Nominal Target -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-semibold text-slate-300" for="goal_target">Nominal Target (Rp) *</label>
+              <input 
+                id="goal_target" 
+                type="number" 
+                placeholder="cth: 24000000" 
+                required
+                min="1000"
+                class="w-full bg-[#121414] border border-[#2d2f39] text-white rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-blue-500 outline-none"
+              >
+            </div>
+            <!-- Setoran Awal -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-semibold text-slate-300" for="goal_initial">Dana Awal (Rp)</label>
+              <input 
+                id="goal_initial" 
+                type="number" 
+                placeholder="Mulai dari 0" 
+                min="0"
+                class="w-full bg-[#121414] border border-[#2d2f39] text-white rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-blue-500 outline-none"
+              >
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Kategori -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-semibold text-slate-300" for="goal_category">Kategori</label>
+              <select 
+                id="goal_category" 
+                class="w-full bg-[#121414] border border-[#2d2f39] text-white rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-blue-500 outline-none cursor-pointer"
+              >
+                <option value="Dana Darurat">Dana Darurat</option>
+                <option value="Liburan">Liburan / Travel</option>
+                <option value="Gawai">Gawai / Elektronik</option>
+                <option value="Kendaraan">Kendaraan</option>
+                <option value="Properti">Properti / Rumah</option>
+              </select>
+            </div>
+            <!-- Target Tanggal -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-semibold text-slate-300" for="goal_date">Tenggat Waktu *</label>
+              <input 
+                id="goal_date" 
+                type="date" 
+                required
+                class="w-full bg-[#121414] border border-[#2d2f39] text-white rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-blue-500 outline-none cursor-pointer"
+              >
+            </div>
+          </div>
+
+          <!-- Color Preset Picker -->
+          <div class="flex flex-col gap-2 pt-2">
+            <span class="text-xs font-semibold text-slate-300">Pilih Aksen Warna</span>
+            <div class="flex gap-2.5">
+              <button type="button" onclick="selectColor('bg-blue-600', this)" class="w-6 h-6 rounded-full bg-blue-600 border-2 border-white ring-2 ring-blue-500/35 cursor-pointer"></button>
+              <button type="button" onclick="selectColor('bg-emerald-500', this)" class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-transparent hover:scale-115 transition-all cursor-pointer"></button>
+              <button type="button" onclick="selectColor('bg-violet-500', this)" class="w-6 h-6 rounded-full bg-violet-500 border-2 border-transparent hover:scale-115 transition-all cursor-pointer"></button>
+              <button type="button" onclick="selectColor('bg-amber-500', this)" class="w-6 h-6 rounded-full bg-amber-500 border-2 border-transparent hover:scale-115 transition-all cursor-pointer"></button>
+              <button type="button" onclick="selectColor('bg-rose-500', this)" class="w-6 h-6 rounded-full bg-rose-500 border-2 border-transparent hover:scale-115 transition-all cursor-pointer"></button>
+            </div>
+          </div>
+
+          <button 
+            type="submit" 
+            class="w-full py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-extrabold text-xs rounded-xl transition-all shadow-lg shadow-blue-600/10 tracking-wide uppercase mt-4 cursor-pointer"
+          >
+            Tambahkan Komitmen Impian
+          </button>
+        </form>
+      </section>
+
+      <!-- 2. #UPDATE & LIST VIEW - DAFTAR TARGET IMPIAN (Kanan) -->
+      <section class="lg:col-span-2 space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-extrabold text-white flex items-center gap-2">
+            Progress Pengumpulan Tabungan
+          </h2>
+          <span class="text-xs bg-slate-800 border border-[#1E2025] px-2.5 py-1 rounded-full text-slate-300" id="goal_count">
+            2 Target Aktif
+          </span>
+        </div>
+
+        <!-- Empty State Alert (Jika Kosong) -->
+        <div id="empty_state" class="hidden p-8 border border-dashed border-[#1E2025] rounded-2xl flex flex-col items-center justify-center text-center text-slate-500 gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+          </svg>
+          <div class="text-xs font-semibold">Tidak ada target impian saat ini</div>
+          <p class="text-[10px] text-slate-500 max-w-xs">Komitmen tabungan Anda akan tampil di halaman ini.</p>
+        </div>
+
+        <!-- Grid Cards Target Impian -->
+        <div id="goals_grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- INDIVIDUAL CARD MOCKUP 1 -->
+          <div class="bg-[#0A0B0D] border border-[#1E2025] rounded-2xl p-5 hover:border-slate-700/50 transition-all flex flex-col justify-between relative overflow-hidden group">
+            
+            <div class="space-y-4">
+              <!-- Top Row Info -->
+              <div class="flex justify-between items-start gap-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="p-2 w-10 h-10 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center">
+                    <!-- Icon Laptop -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">Macbook Pro M4 Slate</h3>
+                    <span class="text-[9px] bg-[#121414] border border-[#1E2025] px-2 py-0.5 rounded-full text-slate-400">Gawai</span>
+                  </div>
+                </div>
+                
+                <!-- Action #delete & status rilis -->
+                <button onclick="handleDeleteGoal(1)" class="p-1.5 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Angka Finansial -->
+              <div class="grid grid-cols-2 gap-2 border-t border-b border-white/5 py-3">
+                <div>
+                  <span class="text-[9px] text-slate-500 uppercase font-semibold">Terkumpul</span>
+                  <p class="text-xs font-bold text-emerald-400 font-mono">Rp 12.000.000</p>
+                </div>
+                <div class="text-right">
+                  <span class="text-[9px] text-slate-500 uppercase font-semibold">Plafon Target</span>
+                  <p class="text-xs font-bold text-white font-mono">Rp 24.000.000</p>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="space-y-1.5">
+                <div class="flex justify-between items-center text-[10px]">
+                  <span class="text-slate-400 font-medium">Kekurangan: <b class="text-amber-500">Rp 12.000.000</b></span>
+                  <span class="font-extrabold text-blue-400">50%</span>
+                </div>
+                <div class="w-full bg-[#121414] h-2 rounded-full overflow-hidden">
+                  <div class="bg-blue-600 h-2 rounded-full" style="width: 50%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bagian Action Setor & Tarik Dana -->
+            <div class="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 gap-2">
+              <button 
+                onclick="promptSetorDana(1, 12000000, 'Macbook Pro M4 Slate')" 
+                class="py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold text-[11px] rounded-lg border border-emerald-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer hover:scale-[1.02] active:scale-95 transition-all"
+              >
+                Setor Dana
+              </button>
+              <button 
+                onclick="promptTarikDana(1, 12000000, 'Macbook Pro M4 Slate')" 
+                class="py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold text-[11px] rounded-lg border border-rose-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer hover:scale-[1.02] active:scale-95 transition-all"
+              >
+                Tarik Simpanan
+              </button>
+            </div>
+          </div>
+
+          <!-- INDIVIDUAL CARD MOCKUP 2 -->
+          <div class="bg-[#0A0B0D] border border-[#1E2025] rounded-2xl p-5 hover:border-slate-700/50 transition-all flex flex-col justify-between relative overflow-hidden group">
+            
+            <div class="space-y-4">
+              <div class="flex justify-between items-start gap-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="p-2 w-10 h-10 rounded-xl bg-blue-500/10 text-blue-450 flex items-center justify-center">
+                    <!-- Icon Plane -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-xs font-bold text-white group-hover:text-amber-400 transition-colors">Liburan ke Jepang</h3>
+                    <span class="text-[9px] bg-[#121414] border border-[#1E2025] px-2 py-0.5 rounded-full text-slate-400">Liburan</span>
+                  </div>
+                </div>
+                
+                <button onclick="handleDeleteGoal(2)" class="p-1.5 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all cursor-pointer">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Angka Finansial -->
+              <div class="grid grid-cols-2 gap-2 border-t border-b border-white/5 py-3">
+                <div>
+                  <span class="text-[9px] text-slate-500 uppercase font-semibold">Terkumpul</span>
+                  <p class="text-xs font-bold text-emerald-400 font-mono">Rp 850.000</p>
+                </div>
+                <div class="text-right">
+                  <span class="text-[9px] text-slate-500 uppercase font-semibold">Plafon Target</span>
+                  <p class="text-xs font-bold text-white font-mono">Rp 10.000.000</p>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="space-y-1.5">
+                <div class="flex justify-between items-center text-[10px]">
+                  <span class="text-slate-400 font-medium">Kekurangan: <b class="text-amber-500">Rp 9.150.000</b></span>
+                  <span class="font-extrabold text-amber-500">8.5%</span>
+                </div>
+                <div class="w-full bg-[#121414] h-2 rounded-full overflow-hidden">
+                  <div class="bg-amber-500 h-2 rounded-full" style="width: 8.5%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Setor & Tarik Dana -->
+            <div class="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 gap-2">
+              <button 
+                onclick="promptSetorDana(2, 9150000, 'Liburan ke Jepang')" 
+                class="py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold text-[11px] rounded-lg border border-emerald-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer hover:scale-[1.02] active:scale-95 transition-all"
+              >
+                Setor Dana
+              </button>
+              <button 
+                onclick="promptTarikDana(2, 850000, 'Liburan ke Jepang')" 
+                class="py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold text-[11px] rounded-lg border border-rose-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer hover:scale-[1.02] active:scale-95 transition-all"
+              >
+                Tarik Simpanan
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+  <!-- ========================================================================= -->
+  <!-- AKHIR DARI BAGIAN UTAMA #MAIN                                              -->
+  <!-- ========================================================================= -->
+
+
+  <!-- ========================================================================= -->
+  <!-- #SWEETALERT & LOGIC SCRIPTS (Diletakkan di bawah dokumen HTML)             -->
+  <!-- ========================================================================= -->
+  <script>
+    // Menyimpan aksen warna yang dipilih saat form dibuat
+    let activeColorClass = 'bg-blue-600'; 
+    
+    // Mock Data dompet/rekening aktif untuk digunakan di dropdown penarikan/setoran
+    const mockWallets = [
+      { id: 'wallet-1', name: 'Dompet Utama', accountNo: 'Tunai' },
+      { id: 'wallet-2', name: 'Bank BCA', accountNo: '883-9912-10' },
+      { id: 'wallet-3', name: 'E-Wallet GoPay', accountNo: '08123456789' }
+    ];
+
+    function selectColor(colorClass, element) {
+      activeColorClass = colorClass;
+      // Riset seleksi visual border aksen warna
+      const buttons = element.parentElement.children;
+      for (let btn of buttons) {
+        btn.classList.add('border-transparent');
+        btn.classList.remove('border-white', 'ring-2', 'ring-blue-500/35');
+      }
+      element.classList.remove('border-transparent');
+      element.classList.add('border-white', 'ring-2', 'ring-blue-500/35');
+    }
+
+    // -------------------------------------------------------------
+    // #CREATE: Penambahan Target Komitmen Baru
+    // -------------------------------------------------------------
+    function handleCreateGoal() {
+      const name = document.getElementById('goal_name').value;
+      const target = parseFloat(document.getElementById('goal_target').value);
+      const initial = parseFloat(document.getElementById('goal_initial').value) || 0;
+      const date = document.getElementById('goal_date').value;
+      const category = document.getElementById('goal_category').value;
+
+      if (initial > target) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Dana awal terkumpul tidak boleh melebihi target utama tabungan.',
+          icon: 'error',
+          background: '#1a1d1d',
+          color: '#e2e2e2',
+          confirmButtonColor: '#0052ff'
+        });
+        return;
+      }
+
+      Swal.fire({
+        title: 'Sukses!',
+        text: `Target Komitmen "${name}" berhasil ditambahkan ke daftar impian.`,
+        icon: 'success',
+        background: '#1a1d1d',
+        color: '#e2e2e2',
+        confirmButtonColor: '#0052ff'
+      });
+
+      // Reset form setelah pembuatan sukses
+      document.getElementById('create_goal_form').reset();
+    }
+
+    // -------------------------------------------------------------
+    // #DELETE: Penghapusan Target Impian
+    // -------------------------------------------------------------
+    function handleDeleteGoal(goalId) {
+      Swal.fire({
+        title: 'Hapus Rencana Impian?',
+        text: 'Anda akan menghapus target impian ini dari daftar. Apakah Anda yakin?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#374151',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        background: '#1a1d1d',
+        color: '#e2e2e2',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: 'Terhapus!',
+            text: 'Target impian berhasil dihapus.',
+            icon: 'success',
+            background: '#1a1d1d',
+            color: '#e2e2e2',
+            confirmButtonColor: '#0052ff'
+          });
+        }
+      });
+    }
+
+    // -------------------------------------------------------------
+    // #UPDATE: SETOR DANA DARI REKENING (SweetAlert dengan Pilihan Dropdown Rekening)
+    // -------------------------------------------------------------
+    function promptSetorDana(goalId, minNeeded, goalName) {
+      
+      // Susun opsi string dropdown dinamis dari variabel Rekening dompet
+      const walletOptions = mockWallets.map(w => 
+        `<option value="${w.id}" style="background-color: #121414; color: #e2e2e2;">${w.name} (${w.accountNo})</option>`
+      ).join('');
+
+      // Desain form input SweetAlert
+      const htmlContent = `
+        <div style="text-align: left; font-family: sans-serif; display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">Sisa kekurangan s/d lunas: <b>Rp ${minNeeded.toLocaleString('id-ID')}</b></p>
+          
+          <!-- Dropdown Pilihan Rekening Sumber Pengirim -->
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="font-size: 11px; font-weight: bold; color: #c3c5d9;">Sumber Rekening Pengirim</label>
+            <select id="swal_wallet_id" style="width: 100%; background-color: #121414; color: #e2e2e2; border: 1px solid rgba(67, 70, 86, 0.4); border-radius: 8px; padding: 10px 12px; font-size: 13px; outline: none; cursor: pointer;">
+              ${walletOptions}
+            </select>
+          </div>
+          
+          <!-- Masukkan nominal deposit -->
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="font-size: 11px; font-weight: bold; color: #c3c5d9;">Nominal Setor (Rp)</label>
+            <input type="number" id="swal_amount" placeholder="Contoh: 1000000" style="width: 100%; background-color: #121414; color: #e2e2e2; border: 1px solid rgba(67, 70, 86, 0.4); border-radius: 8px; padding: 10px 12px; font-size: 13px; outline: none;" min="1000">
+          </div>
+        </div>
+      `;
+
+      Swal.fire({
+        title: 'Tambah Dana Tabungan',
+        html: htmlContent,
+        showCancelButton: true,
+        confirmButtonText: 'Setor Tabungan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#374151',
+        background: '#1a1d1d',
+        color: '#e2e2e2',
+        focusConfirm: false,
+        preConfirm: () => {
+          const walletId = document.getElementById('swal_wallet_id').value;
+          const amountVal = document.getElementById('swal_amount').value;
+          const amount = parseFloat(amountVal);
+
+          if (!walletId) {
+            Swal.showValidationMessage('Harap pilih rekening pengirim / sumber dana');
+            return false;
+          }
+          if (!amount || amount <= 0) {
+            Swal.showValidationMessage('Harap masukkan nominal deposit yang valid (> 0)');
+            return false;
+          }
+          return { walletId, amount };
+        }
+      }).then((res) => {
+        if (res.isConfirmed && res.value) {
+          const { walletId, amount } = res.value;
+          const selectedWallet = mockWallets.find(w => w.id === walletId);
+
+          Swal.fire({
+            title: 'Setoran Berhasil!',
+            html: `Dana sebesar <b>Rp ${amount.toLocaleString('id-ID')}</b> dari rekening <b>${selectedWallet.name}</b> berhasil disimpan ke target impian: "${goalName}".`,
+            icon: 'success',
+            background: '#1a1d1d',
+            color: '#e2e2e2',
+            confirmButtonColor: '#0052ff'
+          });
+        }
+      });
+    }
+
+    // -------------------------------------------------------------
+    // #UPDATE: TARIK DANA KE REKENING (SweetAlert dengan Pilihan Dropdown Rekening)
+    // -------------------------------------------------------------
+    function promptTarikDana(goalId, currentAmount, goalName) {
+      
+      const walletOptions = mockWallets.map(w => 
+        `<option value="${w.id}" style="background-color: #121414; color: #e2e2e2;">${w.name} (${w.accountNo})</option>`
+      ).join('');
+
+      const htmlContent = `
+        <div style="text-align: left; font-family: sans-serif; display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">Plafond Maksimum Rilis: <b>Rp ${currentAmount.toLocaleString('id-ID')}</b></p>
+          
+          <!-- Dropdown Pilihan Rekening Tujuan Penerima -->
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="font-size: 11px; font-weight: bold; color: #c3c5d9;">Tujuan Rekening Penerima</label>
+            <select id="swal_wallet_id" style="width: 100%; background-color: #121414; color: #e2e2e2; border: 1px solid rgba(67, 70, 86, 0.4); border-radius: 8px; padding: 10px 12px; font-size: 13px; outline: none; cursor: pointer;">
+              ${walletOptions}
+            </select>
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="font-size: 11px; font-weight: bold; color: #c3c5d9;">Nominal Tarik (Rp)</label>
+            <input type="number" id="swal_amount" placeholder="Contoh: 500000" style="width: 100%; background-color: #121414; color: #e2e2e2; border: 1px solid rgba(67, 70, 86, 0.4); border-radius: 8px; padding: 10px 12px; font-size: 13px; outline: none;" max="${currentAmount}">
+          </div>
+        </div>
+      `;
+
+      Swal.fire({
+        title: 'Tarik Dana Rencana',
+        html: htmlContent,
+        showCancelButton: true,
+        confirmButtonText: 'Tarik Dana',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#f43f5e',
+        cancelButtonColor: '#374151',
+        background: '#1a1d1d',
+        color: '#e2e2e2',
+        focusConfirm: false,
+        preConfirm: () => {
+          const walletId = document.getElementById('swal_wallet_id').value;
+          const amountVal = document.getElementById('swal_amount').value;
+          const val = parseFloat(amountVal);
+
+          if (!walletId) {
+            Swal.showValidationMessage('Harap pilih rekening tujuan penerima');
+            return false;
+          }
+          if (!val || val <= 0) {
+            Swal.showValidationMessage('Harap masukkan nominal penarikan yang valid (> 0)');
+            return false;
+          } else if (val > currentAmount) {
+            Swal.showValidationMessage(`Dana rilis melebihi modal simpanan saat ini (Maks Rp ${currentAmount.toLocaleString('id-ID')})`);
+            return false;
+          }
+          return { walletId, amount: val };
+        }
+      }).then((res) => {
+        if (res.isConfirmed && res.value) {
+          const { walletId, amount } = res.value;
+          const selectedWallet = mockWallets.find(w => w.id === walletId);
+
+          Swal.fire({
+            title: 'Dana Cair!',
+            html: `Dana sebesar <b>Rp ${amount.toLocaleString('id-ID')}</b> berhasil dipindahkan secara aman ke rekening <b>${selectedWallet.name}</b>.`,
+            icon: 'success',
+            background: '#1a1d1d',
+            color: '#e2e2e2',
+            confirmButtonColor: '#0052ff'
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>

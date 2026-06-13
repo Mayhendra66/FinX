@@ -18,6 +18,7 @@ class SavingGoal extends Model
         'name',
         'target_amount',
         'current_amount',
+        'category',
         'deadline',
     ];
 

@@ -11,6 +11,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionMobileController;
 use App\Http\Controllers\CicilanController;
+use App\Http\Controllers\SavingGoalController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -53,6 +54,10 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('cicilan', CicilanController::class);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('saving-goals', SavingGoalController::class);
 });
 
 
