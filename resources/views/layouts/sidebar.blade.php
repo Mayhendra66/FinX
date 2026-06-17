@@ -10,9 +10,7 @@
     <span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">KeuanganKU</span>
   </div>
   <div class="flex items-center gap-xs">
-    <button class="p-2 text-on-surface-variant dark:text-surface-variant hover:bg-white/40 dark:hover:bg-white/10 transition-all duration-200 rounded-full">
-      <span class="material-symbols-outlined">notifications</span>
-    </button>
+
     <button onclick="toggleSidebar()" class="p-2 text-on-surface-variant dark:text-surface-variant hover:bg-white/40 dark:hover:bg-white/10 transition-all duration-200 rounded-full">
       <span class="material-symbols-outlined">menu</span>
     </button>
@@ -60,8 +58,8 @@
       <span>Dompet</span>
     </a>
 
-    <a id="menu_item_analisis" href="#" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('analisis.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
-      <svg class="w-5 h-5 {{ request()->routeIs('analisis.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <a id="menu_item_analisis" href="{{route('analysis.index')}}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('analysis.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
+      <svg class="w-5 h-5 {{ request()->routeIs('analysis.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
         <line x1="18" y1="20" x2="18" y2="10"></line>
         <line x1="12" y1="20" x2="12" y2="4"></line>
         <line x1="6" y1="20" x2="6" y2="14"></line>
@@ -124,13 +122,7 @@
   </nav>
 
   <div class="px-6 mt-auto flex flex-col gap-4 shrink-0">
-    <a id="add_transaction_btn" href="#" class="w-full bg-[#0052FF] text-white py-2.5 rounded-lg font-bold text-xs hover:bg-[#004CED] transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]">
-      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-      </svg>
-      <span>Tambah Transaksi</span>
-    </a>
+    
 
     <form method="POST" action="{{ route('logout') }}" class="w-full shrink-0">
       @csrf

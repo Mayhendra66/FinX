@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionMobileController;
 use App\Http\Controllers\CicilanController;
 use App\Http\Controllers\SavingGoalController;
+use App\Http\Controllers\AnalysisController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -58,6 +59,10 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('saving-goals', SavingGoalController::class);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('analysis', AnalysisController::class);
 });
 
 

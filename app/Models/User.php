@@ -76,8 +76,4 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
-    public function utang(): HasMany
-    {
-        return $this->hasMany(Utang::class);
-    }
 }

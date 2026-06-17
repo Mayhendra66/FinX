@@ -282,14 +282,7 @@
                                 class="w-full bg-black border border-slate-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand" />
                         </div>
                     </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-semibold text-slate-350" for="edit_balance">Nominal Saldo
-                            Terkini</label>
-                        <input type="text" id="edit_balance" placeholder="Rp 0" oninput="formatIDR(this)"
-                            class="w-full bg-black border border-slate-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand"
-                            required />
-                        <input type="hidden" id="edit_balance_raw" name="balance" />
-                    </div>
+                    
                     <div class="flex justify-end gap-2 pt-4 border-t border-slate-800/60">
                         <button type="button" onclick="tutupModalEdit()"
                             class="px-4 py-2 text-xs font-bold text-slate-400 hover:bg-slate-800 rounded-lg cursor-pointer">Batal</button>
@@ -408,7 +401,7 @@
             document.getElementById('form_edit').reset();
         }
 
-        function muatEdisiRekening(id, name, type, accountNo, balance) {
+        function muatEdisiRekening(id, name, type, accountNo) {
             const formEdit = document.getElementById('form_edit');
             formEdit.action = `/akun/${id}`;
 
@@ -416,9 +409,7 @@
             document.getElementById('edit_type').value = type;
             document.getElementById('edit_no').value = accountNo;
 
-            const balanceInput = document.getElementById('edit_balance');
-            balanceInput.value = balance;
-            formatIDR(balanceInput);
+         
 
             document.getElementById('modal_edit').classList.remove('hidden');
         }

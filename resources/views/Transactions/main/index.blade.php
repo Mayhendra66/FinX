@@ -99,22 +99,30 @@
             </div>
 
             {{-- 5. Tanggal Mulai --}}
-            <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-semibold text-neutral-300">Tanggal Mulai</label>
-                <input type="date" name="start_date" id="filter_start_date"
-                    value="{{ request('start_date') }}"
-                    class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer">
-            </div>
+<div class="flex flex-col gap-1.5">
+    <label class="text-xs font-semibold text-neutral-300">Tanggal Mulai</label>
+    <div class="relative">
+        <i class="fa-solid fa-calendar-days absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs pointer-events-none"></i>
+        <input type="text" name="start_date" id="filter_start_date"
+            value="{{ request('start_date') }}"
+            placeholder="Pilih tanggal mulai"
+            class="w-full bg-neutral-950 border border-neutral-800 rounded-lg pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer shadow-sm placeholder:text-neutral-600">
+    </div>
+</div>
 
-           {{-- 6. Tanggal Selesai --}}
+{{-- 6. Tanggal Selesai --}}
 <div class="flex flex-col gap-1.5">
     <label class="text-xs font-semibold text-neutral-300">Tanggal Selesai</label>
     <div class="flex gap-1.5">
-        <input type="date" name="end_date" id="filter_end_date"
-            value="{{ request('end_date') }}"
-            class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer">
+        <div class="relative w-full">
+            <i class="fa-solid fa-calendar-days absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs pointer-events-none"></i>
+            <input type="text" name="end_date" id="filter_end_date"
+                value="{{ request('end_date') }}"
+                placeholder="Pilih tanggal selesai"
+                class="w-full bg-neutral-950 border border-neutral-800 rounded-lg pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer shadow-sm placeholder:text-neutral-600">
+        </div>
         <button type="button" id="btn_apply_date"
-            class="cursor-pointer px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white text-xs font-bold shrink-0">
+            class="cursor-pointer px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white text-xs font-bold shrink-0 transition-colors shadow-lg shadow-blue-600/10">
             OK
         </button>
     </div>
@@ -223,7 +231,6 @@
         </h2>
 
         <form id="form_add_transaction" class="space-y-4 text-xs">
-            {{-- CSRF diambil dari sini via JS: form.querySelector('[name=_token]').value --}}
             @csrf
 
             <div>
@@ -250,23 +257,26 @@
             <div>
                 <label class="block text-neutral-300 font-semibold mb-1">Jumlah Nominal (Rupiah)</label>
                 <input type="text" id="create_amount" name="amount" required
-    placeholder="Contoh: Rp 150.000"
-    oninput="formatIDR(this)"
-    class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-white">
+                    placeholder="Contoh: Rp 150.000"
+                    oninput="formatIDR(this)"
+                    class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-white">
             </div>
 
             <div>
                 <label class="block text-neutral-300 font-semibold mb-1">Kategori</label>
-                {{-- Options di-render JS via renderCreateCategory() --}}
                 <select name="category_id" id="create_category" required
                     class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-white">
                 </select>
             </div>
 
+            {{-- Tanggal Create (Modifikasi Flatpickr) --}}
             <div>
                 <label class="block text-neutral-300 font-semibold mb-1">Tanggal Transaksi</label>
-                <input type="date" name="transaction_date" required value="{{ date('Y-m-d') }}"
-                    class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-white">
+                <div class="relative">
+                    <i class="fa-solid fa-calendar-days absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs pointer-events-none"></i>
+                    <input type="text" name="transaction_date" id="create_transaction_date" required
+                        class="w-full bg-neutral-950 border border-neutral-800 rounded-lg pl-9 pr-3 py-2.5 text-white focus:outline-none focus:border-blue-500 cursor-pointer shadow-sm">
+                </div>
             </div>
 
             <div>
@@ -285,9 +295,6 @@
     </div>
 </div>
 
-{{-- ==============================
-     MODAL UPDATE
-============================== --}}
 <div id="modal_update" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
     <div class="bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-md p-6 relative shadow-2xl">
         <h2 class="text-base font-bold text-white mb-4 flex items-center gap-2">
@@ -329,10 +336,19 @@
 
             <div>
                 <label class="block text-neutral-300 font-semibold mb-1">Kategori</label>
-                {{-- Options di-render JS via renderEditCategory() --}}
                 <select id="edit_category" name="category_id"
                     class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-white">
                 </select>
+            </div>
+
+            {{-- Tanggal Update (Ditambahkan agar sinkron) --}}
+            <div>
+                <label class="block text-neutral-300 font-semibold mb-1">Tanggal Transaksi</label>
+                <div class="relative">
+                    <i class="fa-solid fa-calendar-days absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs pointer-events-none"></i>
+                    <input type="text" name="transaction_date" id="edit_transaction_date" required
+                        class="w-full bg-neutral-950 border border-neutral-800 rounded-lg pl-9 pr-3 py-2.5 text-white focus:outline-none focus:border-blue-500 cursor-pointer shadow-sm">
+                </div>
             </div>
 
             <div>
@@ -369,6 +385,7 @@
     // selectedId = id yang mau dipre-select (opsional)
     // ==============================
     function renderCategoryOptions(target, filterType, selectedId = null) {
+        if (!target) return;
         const filtered = filterType === 'all'
             ? ALL_CATEGORIES
             : ALL_CATEGORIES.filter(c => c.type === filterType);
@@ -385,10 +402,11 @@
     const filterCategoryEl = document.getElementById('filter_category');
 
     function initFilterCategory() {
+        if (!filterTypeEl || !filterCategoryEl) return;
+        
         const currentType       = filterTypeEl.value;
         const currentCategoryId = '{{ request('category_id') }}';
 
-        // Tambah opsi "Semua Kategori" dulu
         filterCategoryEl.innerHTML = `<option value="all">Semua Kategori</option>`;
 
         const filtered = currentType === 'all'
@@ -407,40 +425,85 @@
     // Render saat halaman load
     initFilterCategory();
 
-    // Re-render saat tipe filter berubah, reset kategori ke "semua"
-    filterTypeEl.addEventListener('change', function () {
-        initFilterCategory();
-        // Reset selected category ke "all" karena tipe berubah
-        filterCategoryEl.value = 'all';
+    if (filterTypeEl) {
+        filterTypeEl.addEventListener('change', function () {
+            initFilterCategory();
+            filterCategoryEl.value = 'all';
+        });
+    }
+
+    // ==============================
+    // INITIALIZATION: FLATPICKR CONFIGS
+    // ==============================
+    const baseDateConfig = {
+        dateFormat: "Y-m-d",
+        altInput: true,
+        altFormat: "d M Y", 
+        disableMobile: "true"
+    };
+
+    // Filter Tanggal Mulai
+    const startDatePicker = flatpickr("#filter_start_date", {
+        ...baseDateConfig,
+        onChange: function(selectedDates, dateStr) {
+            if (typeof endDatePicker !== 'undefined') {
+                endDatePicker.set('minDate', dateStr);
+            }
+        }
+    });
+
+    // Filter Tanggal Selesai
+    const endDatePicker = flatpickr("#filter_end_date", {
+        ...baseDateConfig,
+        minDate: document.getElementById('filter_start_date')?.value || ""
+    });
+
+    // Modal Create Tanggal
+    const createDatePicker = flatpickr("#create_transaction_date", {
+        ...baseDateConfig,
+        defaultDate: "{{ date('Y-m-d') }}"
+    });
+
+    // Modal Update Tanggal
+    const editDatePicker = flatpickr("#edit_transaction_date", {
+        ...baseDateConfig
     });
 
     // ==============================
-    // AUTO-SUBMIT FILTER
+    // AUTO-SUBMIT & ACTION FILTERS
     // ==============================
     document.querySelectorAll('#filter_form select').forEach(el => {
-    el.addEventListener('change', () => document.getElementById('filter_form').submit());
-});
+        el.addEventListener('change', () => document.getElementById('filter_form').submit());
+    });
 
-// Search → submit pas tekan Enter aja
-document.getElementById('filter_search').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        document.getElementById('filter_form').submit();
+    const filterSearchEl = document.getElementById('filter_search');
+    if (filterSearchEl) {
+        filterSearchEl.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('filter_form').submit();
+            }
+        });
     }
-});
 
-// Date → submit pas klik tombol Apply
-document.getElementById('btn_apply_date').addEventListener('click', function () {
-    document.getElementById('filter_form').submit();
-});
+    const btnApplyDateEl = document.getElementById('btn_apply_date');
+    if (btnApplyDateEl) {
+        btnApplyDateEl.addEventListener('click', function () {
+            document.getElementById('filter_form').submit();
+        });
+    }
 
     // ==============================
     // MODAL CREATE
     // ==============================
     function bukaModalCreate() {
-        // Default income, render kategori income
         document.getElementById('create_type_income').checked = true;
         renderCategoryOptions(document.getElementById('create_category'), 'income');
+        
+        if (createDatePicker) {
+            createDatePicker.setDate("{{ date('Y-m-d') }}");
+        }
+        
         document.getElementById('modal_create').classList.remove('hidden');
     }
 
@@ -449,7 +512,6 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
         document.getElementById('form_add_transaction').reset();
     }
 
-    // Re-render kategori saat tipe di modal create berubah
     document.querySelectorAll('[name="type"][id^="create_type"]').forEach(radio => {
         radio.addEventListener('change', function () {
             renderCategoryOptions(document.getElementById('create_category'), this.value);
@@ -457,7 +519,6 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
     });
 
     async function submitCreate() {
-        // Konfirmasi SweetAlert sebelum submit
         const konfirmasi = await Swal.fire({
             title: 'Simpan Transaksi?',
             text: 'Pastikan semua data sudah benar sebelum disimpan.',
@@ -474,7 +535,7 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
         if (!konfirmasi.isConfirmed) return;
 
         const form   = document.getElementById('form_add_transaction');
-        const csrf   = form.querySelector('[name="_token"]').value; // Ambil CSRF dari form langsung
+        const csrf   = form.querySelector('[name="_token"]').value;
         const formData = new FormData(form);
         formData.set('amount', getRawValue(document.getElementById('create_amount').value));
 
@@ -502,7 +563,6 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
                     customClass: { popup: 'border border-neutral-800 rounded-xl' }
                 }).then(() => window.location.reload());
             } else {
-                // Tampilkan error validasi jika ada
                 const errMsg = data.errors
                     ? Object.values(data.errors).flat().join('\n')
                     : (data.message ?? 'Terjadi kesalahan, coba lagi.');
@@ -525,10 +585,9 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
     // MODAL UPDATE
     // ==============================
     function bukaModalUpdate(id, desc, categoryId, accountId, amount, type, createdAt) {
-        // Cek apakah transaksi sudah lebih dari 24 jam
-        const now         = new Date();
+        const now       = new Date();
         const created     = new Date(createdAt);
-        const diffJam     = (now - created) / (1000 * 60 * 60); // selisih dalam jam
+        const diffJam     = (now - created) / (1000 * 60 * 60);
 
         if (diffJam > 24) {
             Swal.fire({
@@ -546,7 +605,7 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
                 confirmButtonText: 'Mengerti',
                 customClass: { popup: 'border border-neutral-800 rounded-xl' }
             });
-            return; // Stop — jangan buka modal
+            return;
         }
 
         document.getElementById('edit_id').value          = id;
@@ -554,12 +613,14 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
         document.getElementById('edit_wallet').value      = accountId;
         document.getElementById('edit_amount').value      = amount;
 
-        // Set radio
         document.getElementById('edit_type_income').checked  = (type === 'income');
         document.getElementById('edit_type_expense').checked = (type === 'expense');
 
-        // Render kategori sesuai tipe, pre-select kategori yang ada
         renderCategoryOptions(document.getElementById('edit_category'), type, categoryId);
+        
+        if (editDatePicker) {
+            editDatePicker.setDate(createdAt);
+        }
 
         document.getElementById('modal_update').classList.remove('hidden');
     }
@@ -568,7 +629,6 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
         document.getElementById('modal_update').classList.add('hidden');
     }
 
-    // Re-render kategori saat tipe di modal edit berubah
     document.querySelectorAll('[name="type"][id^="edit_type"]').forEach(radio => {
         radio.addEventListener('change', function () {
             renderCategoryOptions(document.getElementById('edit_category'), this.value);
@@ -576,7 +636,6 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
     });
 
     async function submitUpdate() {
-        // Konfirmasi SweetAlert sebelum update
         const konfirmasi = await Swal.fire({
             title: 'Simpan Perubahan?',
             text: 'Pastikan data yang diubah sudah benar sebelum diperbarui.',
@@ -594,10 +653,9 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
 
         const id     = document.getElementById('edit_id').value;
         const form   = document.getElementById('form_edit_transaction');
-        const csrf   = form.querySelector('[name="_token"]').value; // Ambil CSRF dari form langsung
+        const csrf   = form.querySelector('[name="_token"]').value;
         const formData = new FormData(form);
 
-        // Method spoofing untuk PUT
         formData.append('_method', 'PUT');
 
         try {
@@ -664,7 +722,6 @@ document.getElementById('btn_apply_date').addEventListener('click', function () 
             }
         });
     }
-
 </script>
 
 @endsection

@@ -16,8 +16,8 @@
         </button>
     </div>
 
-    <a class="flex flex-col items-center gap-1 p-2 {{ request()->routeIs('analysis') ? 'text-primary dark:text-primary-fixed' : 'text-on-surface-variant dark:text-surface-variant' }}" href="#">
-        <span class="material-symbols-outlined {{ request()->routeIs('analysis') ? 'fill' : '' }}" {{ request()->routeIs('analysis') ? 'data-weight=fill' : '' }}>analytics</span>
+    <a class="flex flex-col items-center gap-1 p-2 {{ request()->routeIs('analysis.index') ? 'text-primary dark:text-primary-fixed' : 'text-on-surface-variant dark:text-surface-variant' }}" href="{{ route('analysis.index') }}">
+        <span class="material-symbols-outlined {{ request()->routeIs('analysis.index') ? 'fill' : '' }}" {{ request()->routeIs('analysis.index') ? 'data-weight=fill' : '' }}>analytics</span>
         <span class="text-[10px] font-medium">Analisis</span>
     </a>
 
