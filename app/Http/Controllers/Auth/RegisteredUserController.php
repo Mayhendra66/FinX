@@ -33,12 +33,29 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'country_code' => ['required', 'in:+62,+65,+1,+60'],
+            'mobile_number' => ['required', 'numeric', 'digits_between:5,15'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        // Membersihkan angka 0 di awal nomor jika user menyertakannya secara tidak sengaja
+        $cleanNumber = ltrim($request->mobile_number, '0');
+        
+        // Menggabungkan kode negara dan nomor telepon (Contoh: +62812345678)
+        $fullMobileNumber = $request->country_code . $cleanNumber;
+
+        // Validasi tambahan untuk memastikan nomor gabungan unik di database jika diperlukan
+        $request->merge(['full_mobile_number' => $fullMobileNumber]);
+        $request->validate([
+            'full_mobile_number' => ['unique:'.User::class.',mobile_number'],
+        ], [
+            'full_mobile_number.unique' => 'Nomor handphone ini sudah terdaftar.',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'mobile_number' => $fullMobileNumber,
             'password' => Hash::make($request->password),
         ]);
 

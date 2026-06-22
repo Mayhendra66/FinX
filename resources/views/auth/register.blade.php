@@ -160,6 +160,34 @@
             </div>
 
             <div>
+                <label class="block font-label-md text-label-md text-on-surface-variant mb-base" for="mobile_number">Nomor Handphone</label>
+                <div class="relative flex">
+                    <div class="relative">
+                        <select name="country_code" class="h-full bg-background border border-outline-variant rounded-l-lg py-sm pl-sm pr-lg font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none cursor-pointer">
+                            <option value="+62">🇮🇩 +62</option>
+                            <option value="+65">🇸🇬 +65</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+60">🇲🇾 +60</option>
+                        </select>
+                        
+                    </div>
+                    <div class="relative flex-1">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-sm text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[18px]">call</span>
+                        </span>
+                        <input class="w-full bg-background border-y border-r border-outline-variant rounded-r-lg py-sm pl-[36px] pr-sm font-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder-on-surface-variant/50" 
+                            id="mobile_number" 
+                            type="number" 
+                            name="mobile_number" 
+                            :value="old('mobile_number')" 
+                            placeholder="812345678" 
+                            required />
+                    </div>
+                </div>
+                <x-input-error :messages="$errors->get('mobile_number')" class="mt-2" />
+            </div>
+
+            <div>
                 <label class="block font-label-md text-label-md text-on-surface-variant mb-base" for="password">Kata Sandi</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-sm text-on-surface-variant">

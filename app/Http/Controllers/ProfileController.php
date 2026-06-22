@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,8 +26,31 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         
-        // Mengisi data teks yang divalidasi
+        // 1. Validasi input nomor handphone pendukung
+        $request->validate([
+            'country_code' => ['required', 'in:+62,+65,+1,+60'],
+            'mobile_number' => ['required', 'numeric', 'digits_between:5,15'],
+        ]);
+
+        // 2. Format ulang input nomor (hilangkan angka 0 di depan jika ada)
+        $cleanNumber = ltrim($request->mobile_number, '0');
+        $fullMobileNumber = $request->country_code . $cleanNumber;
+
+        // 3. Validasi Unique Database jika nomor HP diubah
+        if ($fullMobileNumber !== $user->mobile_number) {
+            $request->merge(['full_mobile_number' => $fullMobileNumber]);
+            $request->validate([
+                'full_mobile_number' => ['unique:'.User::class.',mobile_number,'.$user->id],
+            ], [
+                'full_mobile_number.unique' => 'Nomor handphone ini sudah digunakan oleh akun lain.',
+            ]);
+        }
+
+        // 4. Sinkronisasi data teks dari Form Request
         $user->fill($request->validated());
+
+        // 5. Masukkan nomor HP yang telah diformat lengkap
+        $user->mobile_number = $fullMobileNumber;
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -34,22 +58,18 @@ class ProfileController extends Controller
 
         // Proses upload foto (nullable/opsional)
         if ($request->hasFile('photo')) {
-            // Validasi file foto secara langsung
             $request->validate([
                 'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             ]);
 
-            // Hapus foto lama di direktori jika ada
             if ($user->photo && file_exists(public_path($user->photo))) {
                 unlink(public_path($user->photo));
             }
 
-            // Simpan foto baru ke public/uploads/profile
             $file = $request->file('photo');
             $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/profile'), $filename);
 
-            // Simpan path ke kolom database
             $user->photo = 'uploads/profile/' . $filename;
         }
 
@@ -59,42 +79,37 @@ class ProfileController extends Controller
     }
 
     public function destroy(Request $request)
-{
-    // Menggunakan validate standar agar mengembalikan error JSON saat request via AJAX
-    $request->validate([
-        'password' => ['required', 'current_password'],
-    ]);
+    {
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
 
-    $user = $request->user();
+        $user = $request->user();
 
-    // Hapus foto dari direktori saat akun dihapus
-    if ($user->photo && file_exists(public_path($user->photo))) {
-        unlink(public_path($user->photo));
+        if ($user->photo && file_exists(public_path($user->photo))) {
+            unlink(public_path($user->photo));
+        }
+
+        Auth::logout();
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json(['success' => true]);
     }
 
-    Auth::logout();
-    $user->delete();
+    public function destroyPhoto(Request $request): RedirectResponse
+    {
+        $user = $request->user();
 
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+        if ($user->photo && file_exists(public_path($user->photo))) {
+            unlink(public_path($user->photo));
+        }
 
-    // Kembalikan status sukses berupa JSON
-    return response()->json(['success' => true]);
-}
+        $user->photo = null;
+        $user->save();
 
-public function destroyPhoto(Request $request): RedirectResponse
-{
-    $user = $request->user();
-
-    // Hapus file foto dari direktori jika ada
-    if ($user->photo && file_exists(public_path($user->photo))) {
-        unlink(public_path($user->photo));
+        return Redirect::route('profile.edit')->with('status', 'photo-deleted');
     }
-
-    // Set kolom foto menjadi null di database
-    $user->photo = null;
-    $user->save();
-
-    return Redirect::route('profile.edit')->with('status', 'photo-deleted');
-}
 }

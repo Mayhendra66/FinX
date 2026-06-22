@@ -82,6 +82,8 @@
                                 <span class="text-red-500 text-[10px] mt-1">{{ $errors->first('photo') }}</span>
                             @endif
                         </div>
+
+                        
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -98,6 +100,47 @@
                             <input type="text" id="email" name="email" value="{{ old('email', $user->email) }}" class="bg-[#121414] border border-[#434656]/50 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#0052ff] font-medium" placeholder="email@domain.com" required autocomplete="username" />
                             @if ($errors->has('email'))
                                 <span class="text-red-500 text-[10px] mt-1">{{ $errors->first('email') }}</span>
+                            @endif
+                        </div>
+
+                        <div class="flex flex-col gap-1.5">
+                            <label for="email" class="text-xs text-[#c3c5d9] font-semibold">Alamat Email</label>
+                            <input type="text" id="email" name="email" value="{{ old('email', $user->email) }}" class="bg-[#121414] border border-[#434656]/50 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#0052ff] font-medium" placeholder="email@domain.com" required autocomplete="username" />
+                            @if ($errors->has('email'))
+                                <span class="text-red-500 text-[10px] mt-1">{{ $errors->first('email') }}</span>
+                            @endif
+                        </div>
+
+                        <div class="flex flex-col gap-1.5 sm:col-span-2">
+                            <label for="mobile_number" class="text-xs text-[#c3c5d9] font-semibold">Nomor Handphone</label>
+                            <div class="relative flex">
+                                @php
+                                    $currentCode = '+62';
+                                    $currentNum = $user->mobile_number;
+                                    
+                                    foreach(['+62', '+65', '+1', '+60'] as $code) {
+                                        if (str_starts_with($user->mobile_number, $code)) {
+                                            $currentCode = $code;
+                                            $currentNum = substr($user->mobile_number, strlen($code));
+                                            break;
+                                        }
+                                    }
+                                @endphp
+                                <div class="relative shrink-0">
+                                    <select name="country_code" class="h-full bg-[#121414] border border-[#434656]/50 rounded-l-lg pl-3 pr-8 text-xs text-white focus:outline-none focus:border-[#0052ff] appearance-none cursor-pointer font-medium">
+                                        <option value="+62" {{ old('country_code', $currentCode) == '+62' ? 'selected' : '' }}>🇮🇩 +62</option>
+                                        <option value="+65" {{ old('country_code', $currentCode) == '+65' ? 'selected' : '' }}>🇸🇬 +65</option>
+                                        <option value="+1" {{ old('country_code', $currentCode) == '+1' ? 'selected' : '' }}>🇺🇸 +1</option>
+                                        <option value="+60" {{ old('country_code', $currentCode) == '+60' ? 'selected' : '' }}>🇲🇾 +60</option>
+                                    </select>
+                                    <span class="absolute inset-y-0 right-2 flex items-center pointer-events-none text-[#c3c5d9]/60">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                                    </span>
+                                </div>
+                                <input type="number" id="mobile_number" name="mobile_number" value="{{ old('mobile_number', $currentNum) }}" class="w-full bg-[#121414] border-y border-r border-[#434656]/50 rounded-r-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-[#0052ff] font-medium" placeholder="812345678" required />
+                            </div>
+                            @if ($errors->has('mobile_number'))
+                                <span class="text-red-500 text-[10px] mt-1">{{ $errors->first('mobile_number') }}</span>
                             @endif
                         </div>
                     </div>
