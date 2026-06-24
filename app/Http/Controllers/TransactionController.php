@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Models\MainAccountModel;
 
 class TransactionController extends Controller
 {
@@ -50,95 +51,191 @@ class TransactionController extends Controller
 
         $transactions = $query->orderByDesc('transaction_date')->get();
 
-        // ✅ Dropdown hanya milik user login
-        $accounts   = Akun::where('user_id', Auth::id())->orderBy('name')->get();
-        $categories = Category::where('user_id', Auth::id())->orderBy('name')->get();
+    $accounts    = Akun::where('user_id', Auth::id())->orderBy('name')->get();
+    $categories  = Category::where('user_id', Auth::id())->orderBy('name')->get();
+    $mainAccount = MainAccountModel::where('user_id', Auth::id())->first(); // ✅ tambah ini
 
-        return view('transactions.main.index', compact(
-            'transactions',
-            'accounts',
-            'categories'
-        ));
+    return view('transactions.main.index', compact(
+        'transactions',
+        'accounts',
+        'categories',
+        'mainAccount' // ✅ tambah ini
+    ));
     }
 
-    public function create()
-    {
-        return redirect()->route('transactions.index');
+    
+
+public function topup(Request $request): JsonResponse
+{
+    $request->validate([
+        'payment_method' => 'required|in:bank,retail',
+        'amount'         => 'required|string',
+        'description'    => 'required|string', // ✅ Validasi input deskripsi
+    ]);
+
+    $rawAmount = (int) preg_replace('/\D/', '', $request->amount);
+
+    if ($rawAmount < 10000) {
+        return response()->json(['message' => 'Minimal top up adalah Rp 10.000'], 422);
     }
 
-    public function store(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'type'             => 'required|in:income,expense',
-            // ✅ Validasi account harus milik user
-            'account_id'       => [
-                'required',
-                Rule::exists('akun', 'id')->where('user_id', Auth::id()),
-            ],
-            // ✅ Validasi category harus milik user
-            'category_id'      => [
-                'required',
-                Rule::exists('categories', 'id')->where('user_id', Auth::id()),
-            ],
-            'amount'           => 'required|numeric|min:1',
-            'transaction_date' => 'required|date',
-            'note'             => 'nullable|string|max:500',
-        ]);
+    $accountId = null;
 
-        $validated['user_id'] = Auth::id();
+    // ✅ Tambah balance di main-account milik user
+    $mainAccount = MainAccountModel::where('user_id', Auth::id())->firstOrFail();
+    $mainAccount->increment('balance', $rawAmount);
 
-        $akun = Akun::where('id', $validated['account_id'])
-                    ->where('user_id', Auth::id())
-                    ->firstOrFail();
+    // ✅ Catat sebagai transaksi income beserta deskripsinya
+    Transaction::create([
+        'user_id'          => Auth::id(),
+        'account_id'       => null,
+        'category_id'      => null,
+        'type'             => 'income',
+        'amount'           => $rawAmount,
+        'transaction_date' => now()->toDateString(),
+        'note'             => $request->description, // ✅ Menyimpan deskripsi (TOP UP GERAI / TOP UP VA)
+        'receipt_image'    => null,
+        'is_installment'   => 0,
+        'installment_id'   => null,
+        'savings_goal_id'  => null,
+    ]);
 
-        if ($validated['type'] === 'income') {
-            $akun->increment('balance', $validated['amount']);
-        } else {
-            $akun->decrement('balance', $validated['amount']);
-        }
+    return response()->json([
+        'message' => 'Top up berhasil, saldo bertambah!',
+    ], 201);
+}
 
-        Transaction::create($validated);
+public function scan(Request $request)
+{
+    $request->validate([
+        'amount'      => 'required|string',
+        'description' => 'required|string',
+        'catatan'     => 'nullable|string|max:255',
+    ]);
 
-        return response()->json([
-            'message' => 'Transaksi berhasil ditambahkan.',
-        ], 201);
+    $rawAmount = (int) preg_replace('/\D/', '', $request->amount);
+
+    if ($rawAmount < 1000) {
+        return back()
+            ->withInput()
+            ->withErrors([
+                'amount' => 'Minimal pembayaran adalah Rp 1.000'
+            ]);
     }
 
-    public function show(string $id)
-    {
-        return redirect()->route('transactions.index');
+    $mainAccount = MainAccountModel::where(
+        'user_id',
+        Auth::id()
+    )->firstOrFail();
+
+    if ($mainAccount->balance < $rawAmount) {
+        return back()
+            ->withInput()
+            ->withErrors([
+                'amount' => 'Saldo utama tidak mencukupi.'
+            ]);
     }
 
-    public function edit(string $id)
-    {
-        return redirect()->route('transactions.index');
+    // Potong saldo
+    $mainAccount->decrement('balance', $rawAmount);
+
+    // Susun note
+    $note = $request->description;
+
+    if ($request->filled('catatan')) {
+        $note .= ' - ' . $request->catatan;
     }
 
-    public function update(Request $request, string $id): JsonResponse
-    {
-        return response()->json([
-            'message' => 'Edit langsung tidak diizinkan. Hapus transaksi lama lalu buat baru.',
-        ], 403);
+    // Simpan transaksi
+    Transaction::create([
+        'user_id'          => Auth::id(),
+        'account_id'       => null,
+        'category_id'      => null,
+        'type'             => 'expense',
+        'amount'           => $rawAmount,
+        'transaction_date' => now()->toDateString(),
+        'note'             => $note,
+        'receipt_image'    => null,
+        'is_installment'   => 0,
+        'installment_id'   => null,
+        'savings_goal_id'  => null,
+    ]);
+
+    return redirect()
+        ->route('dashboard')
+        ->with('success', 'Pembayaran berhasil');
+}
+
+public function transfer()
+{
+    $akun = Akun::where('user_id', Auth::id())
+        ->orderBy('name')
+        ->get();
+
+    return view('transfer.index', compact('akun'));
+}
+
+public function transferCreate($account_id)
+{
+    $account = Akun::where('user_id', Auth::id())
+        ->findOrFail($account_id);
+
+    return view('transfer.create', compact('account'));
+}
+
+public function transferStore(Request $request)
+{
+    $request->validate([
+        'account_id' => 'required|exists:akun,id',
+        'amount'     => 'required|string',
+        'catatan'    => 'nullable|string|max:255',
+    ]);
+
+    $rawAmount = (int) preg_replace('/\D/', '', $request->amount);
+
+    if ($rawAmount < 1000) {
+        return back()
+            ->withInput()
+            ->withErrors([
+                'amount' => 'Minimal transfer Rp 1.000'
+            ]);
     }
 
-    public function destroy(string $id)
-    {
-        $transaction = Transaction::where('user_id', Auth::id())
-                                  ->findOrFail($id);
+    $mainAccount = MainAccountModel::where(
+        'user_id',
+        Auth::id()
+    )->firstOrFail();
 
-        $akun = Akun::where('id', $transaction->account_id)
-                    ->where('user_id', Auth::id())
-                    ->firstOrFail();
-
-        if ($transaction->type === 'income') {
-            $akun->decrement('balance', $transaction->amount);
-        } else {
-            $akun->increment('balance', $transaction->amount);
-        }
-
-        $transaction->delete();
-
-        return redirect()->route('transactions.index')
-                         ->with('success', 'Transaksi berhasil dihapus.');
+    if ($mainAccount->balance < $rawAmount) {
+        return back()
+            ->withInput()
+            ->withErrors([
+                'amount' => 'Saldo utama tidak mencukupi.'
+            ]);
     }
+
+    $account = Akun::where('user_id', Auth::id())
+        ->findOrFail($request->account_id);
+
+    $mainAccount->decrement('balance', $rawAmount);
+
+    Transaction::create([
+        'user_id'          => Auth::id(),
+        'account_id'       => $account->id,
+        'category_id'      => null,
+        'type'             => 'expense',
+        'amount'           => $rawAmount,
+        'transaction_date' => now()->toDateString(),
+        'note'             => $request->catatan,
+        'receipt_image'    => null,
+        'is_installment'   => 0,
+        'installment_id'   => null,
+        'savings_goal_id'  => null,
+    ]);
+
+    return redirect()
+        ->route('dashboard')
+        ->with('success', 'Transfer berhasil');
+}
+    
 }

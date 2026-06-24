@@ -17,7 +17,8 @@ class Akun extends Model
         'name',
         'type',
         'account_no',
-        'balance',
+        'created_at',
+        'type_valid',
     ];
 
     public function user(): BelongsTo

@@ -13,6 +13,8 @@ use App\Http\Controllers\TransactionMobileController;
 use App\Http\Controllers\CicilanController;
 use App\Http\Controllers\SavingGoalController;
 use App\Http\Controllers\AnalysisController;
+
+use App\Http\Controllers\HelpdeskController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -57,20 +59,35 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('cicilan', CicilanController::class);
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::resource('saving-goals', SavingGoalController::class);
-});
+
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('analysis', AnalysisController::class);
 });
 
+Route::get('/payment/qris_scan', function () {
+    return view('payment.qris_scan');
+})->name('payment.qris_scan');
 
+Route::get('/transfer', function () {
+    return view('transfer.index');
+})->name('transfer.index');
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::post('/topup', [TransactionController::class, 'topup'])->name('topup.store');
+    Route::post('/qris', [TransactionController::class, 'qris'])->name('qris.store');
+    Route::post('/qris/scan', [TransactionController::class, 'scan'])->name('scan.store');
+
+    Route::get('/transfer', [TransactionController::class, 'transfer'])->name('transfer.index');
+Route::get('/transfer/create/{account_id}', [TransactionController::class, 'transferCreate'])->name('transfer.create');
+Route::post('/transfer/store', [TransactionController::class, 'transferStore'])->name('transfer.store');
+
+Route::resource('saving-goals', SavingGoalController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::post('saving-goals/intro-seen', [SavingGoalController::class, 'markIntroSeen'])->name('saving-goals.intro-seen');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -81,6 +98,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('akun', AkunController::class);
     Route::post('/akun/transfer', [AkunController::class, 'transfer'])->name('akun.transfer');
+
+    Route::get('/helpdesk', [HelpdeskController::class, 'index'])->name('helpdesk.index');
+    Route::post('/helpdesk', [HelpdeskController::class, 'store'])->name('helpdesk.store');
 });
 
 require __DIR__.'/auth.php';

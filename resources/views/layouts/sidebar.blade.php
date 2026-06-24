@@ -10,7 +10,6 @@
     <span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">KeuanganKU</span>
   </div>
   <div class="flex items-center gap-xs">
-
     <button onclick="toggleSidebar()" class="p-2 text-on-surface-variant dark:text-surface-variant hover:bg-white/40 dark:hover:bg-white/10 transition-all duration-200 rounded-full">
       <span class="material-symbols-outlined">menu</span>
     </button>
@@ -58,7 +57,7 @@
       <span>Dompet</span>
     </a>
 
-    <a id="menu_item_analisis" href="{{route('analysis.index')}}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('analysis.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
+    <a id="menu_item_analisis" href="{{ route('analysis.index') }}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('analysis.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
       <svg class="w-5 h-5 {{ request()->routeIs('analysis.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
         <line x1="18" y1="20" x2="18" y2="10"></line>
         <line x1="12" y1="20" x2="12" y2="4"></line>
@@ -75,42 +74,25 @@
         <line x1="16" y1="17" x2="8" y2="17"></line>
         <polyline points="10 9 9 9 8 9"></polyline>
       </svg>
-      <span>Transaksi</span>
+      <span>Mutasi Rekening</span>
     </a>
 
-    <a id="menu_item_cicilan" href="{{ route('cicilan.index') }}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('cicilan.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
-      <svg class="w-5 h-5 {{ request()->routeIs('cicilan.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-        <line x1="19" y1="5" x2="5" y2="19"></line>
-        <circle cx="6.5" cy="6.5" r="2.5"></circle>
-        <circle cx="17.5" cy="17.5" r="2.5"></circle>
+    <a id="menu_item_saving_goals" href="{{ route('saving-goals.index') }}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('saving-goals.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
+      <svg class="w-5 h-5 {{ request()->routeIs('saving-goals.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <circle cx="12" cy="12" r="6"></circle>
+        <circle cx="12" cy="12" r="2"></circle>
       </svg>
-      <span>Cicilan</span>
+      <span>Saving Goals</span>
     </a>
 
-    <a id="menu_item_saving_goals" href="{{ route('saving-goals.index') }}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-semibold text-sm border-l-4 {{ request()->routeIs('saving-goals.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
-  <svg class="w-5 h-5 {{ request()->routeIs('saving-goals.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="10"></circle>
-    <circle cx="12" cy="12" r="6"></circle>
-    <circle cx="12" cy="12" r="1").></circle>
-  </svg>
-  <span>Saving Goals</span>
-</a>
-
-    <a id="menu_item_kategori" href="{{ route('categories.index') }}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('categories.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
-      <svg class="w-5 h-5 {{ request()->routeIs('categories.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-        <line x1="7" y1="7" x2="7.01" y2="7"></line>
+    <a id="menu_item_anggaran" href="{{ route('transfer.index') }}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('transfer.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
+      <svg class="w-5 h-5 {{ request()->routeIs('transfer.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+        <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
       </svg>
-      <span>Kategori</span>
-    </a>
-
-    <a id="menu_item_anggaran" href="{{ route('budgeting.index') }}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('budgeting.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
-  <svg class="w-5 h-5 {{ request()->routeIs('budgeting.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-    <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
-    <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
-  </svg>
-  <span>Anggaran</span>
-</a>
+      <span>Transfer</span>
+    </a> 
 
     <a id="menu_item_pengaturan" href="{{ route('profile.edit') }}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('profile.edit') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
       <svg class="w-5 h-5 {{ request()->routeIs('profile.edit') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -119,11 +101,19 @@
       </svg>
       <span>Pengaturan</span>
     </a>
+
+    <!-- Menu Baru: Bantuan -->
+    <a id="menu_item_bantuan" href="{{ route('helpdesk.index') }}" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium text-sm border-l-4 {{ request()->routeIs('helpdesk.index') ? 'text-[#b7c4ff] bg-white/5 border-[#0052FF]' : 'border-transparent text-[#c3c5d9]/60 hover:bg-white/5 hover:text-[#e2e2e2]' }}">
+      <svg class="w-5 h-5 {{ request()->routeIs('helpdesk.index') ? 'text-[#0052FF]' : 'text-current' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <span>Bantuan</span>
+    </a>
   </nav>
 
   <div class="px-6 mt-auto flex flex-col gap-4 shrink-0">
-    
-
     <form method="POST" action="{{ route('logout') }}" class="w-full shrink-0">
       @csrf
       <button type="submit" class="w-full bg-transparent border border-red-500/20 text-red-400 py-2.5 rounded-lg font-bold text-xs hover:bg-red-500/10 transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
@@ -141,10 +131,7 @@
     const sidebar = document.getElementById('desktop_sidebar');
     const backdrop = document.getElementById('sidebar_backdrop');
     
-    // Toggle class translate untuk slide effect sidebar
     sidebar.classList.toggle('-translate-x-full');
-    
-    // Toggle class hidden untuk backdrop
     backdrop.classList.toggle('hidden');
   }
 </script>

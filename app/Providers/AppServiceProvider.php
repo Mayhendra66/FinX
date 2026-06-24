@@ -29,5 +29,8 @@ class AppServiceProvider extends ServiceProvider
                 ]);
             }
         });
+
+        // app/Providers/AppServiceProvider.php — di dalam boot()
+\Carbon\Carbon::setLocale('id');
     }
 }

@@ -7,7 +7,7 @@
 
     <a class="flex flex-col items-center gap-1 p-2 {{ request()->routeIs('akun.index') ? 'text-primary dark:text-primary-fixed' : 'text-on-surface-variant dark:text-surface-variant' }}" href="{{ route('akun.index') }}">
         <span class="material-symbols-outlined {{ request()->routeIs('akun.index') ? 'fill' : '' }}" {{ request()->routeIs('akun.index') ? 'data-weight=fill' : '' }}>account_balance_wallet</span>
-        <span class="text-[10px] font-medium">Dompet</span>
+        <span class="text-[10px] font-medium">Rekening Terdaftar</span>
     </a>
 
     <div class="-mt-8">
@@ -23,7 +23,7 @@
 
     <a class="flex flex-col items-center gap-1 p-2 {{ request()->routeIs('transactions.index') ? 'text-primary dark:text-primary-fixed' : 'text-on-surface-variant dark:text-surface-variant' }}" href="{{ route('transactions.index') }}"> 
         <span class="material-symbols-outlined {{ request()->routeIs('transactions.index') ? 'fill' : '' }}" {{ request()->routeIs('transactions.index') ? 'data-weight=fill' : '' }}>receipt_long</span>
-        <span class="text-[10px] font-medium">Transaksi</span>
+        <span class="text-[10px] font-medium">Mutasi Rekening</span>
     </a>
 </nav>
 

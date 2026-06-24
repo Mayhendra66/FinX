@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\MainAccountModel;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB; // Tambahkan facade DB untuk transaksi
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
@@ -52,12 +54,29 @@ class RegisteredUserController extends Controller
             'full_mobile_number.unique' => 'Nomor handphone ini sudah terdaftar.',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'mobile_number' => $fullMobileNumber,
-            'password' => Hash::make($request->password),
-        ]);
+        // Menggunakan DB Transaction untuk memastikan kedua tabel terisi dengan aman
+        $user = DB::transaction(function () use ($request, $fullMobileNumber) {
+            // 1. Simpan data ke tabel users
+            $newUser = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'mobile_number' => $fullMobileNumber,
+                'password' => Hash::make($request->password),
+            ]);
+
+            // 2. Generate 7 digit angka acak untuk account_no
+            $randomAccountNo = (string) mt_rand(1000000, 9999999);
+
+            // 3. Simpan data ke tabel main-account
+            MainAccountModel::create([
+                'user_id'    => $newUser->id,
+                'name'       => $newUser->name,
+                'account_no' => $randomAccountNo,
+                'balance'    => 0,
+            ]);
+
+            return $newUser;
+        });
 
         event(new Registered($user));
 
