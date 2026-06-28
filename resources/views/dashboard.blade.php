@@ -2,7 +2,7 @@
 
 @section('content')
     <main
-        class="flex-1 md:ml-[400px] p-margin-mobile md:p-6 bg-grid-pattern min-h-screen flex flex-col gap-6 w-full max-w-[1600px] mx-auto">
+        class="flex-1 md:ml-[240px] w-full min-h-screen p-4 sm:p-6 lg:p-8 bg-grid-pattern box-border overflow-x-hidden flex flex-col">
         <div class="max-w-5xl mx-auto w-full space-y-5">
 
 
@@ -88,30 +88,30 @@
                     <h3 class="text-[11px] font-black text-white uppercase tracking-widest">Layanan Pilihan Fin X</h3>
                 </div>
                 <div class="grid grid-cols-4 gap-y-3 gap-x-2 text-center">
-                    <button onclick="bukaLayanan('pulsa')"
+                    <a href="{{ route('layanan.pulsa') }}"
                         class="flex flex-col items-center gap-2 focus:outline-none group cursor-pointer">
                         <div
                             class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center group-hover:scale-105 transition-transform mx-auto">
                             <i data-lucide="smartphone" class="w-4 h-4"></i>
                         </div>
                         <span class="text-[9px] font-bold text-slate-400">Pulsa & Data</span>
-                    </button>
-                    <button onclick="bukaLayanan('pln')"
+                    </a>
+                    <a href="{{ route('layanan.pln') }}"
                         class="flex flex-col items-center gap-2 focus:outline-none group cursor-pointer">
                         <div
                             class="w-11 h-11 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 flex items-center justify-center group-hover:scale-105 transition-transform mx-auto">
                             <i data-lucide="zap" class="w-4 h-4"></i>
                         </div>
                         <span class="text-[9px] font-bold text-slate-400">Token PLN</span>
-                    </button>
-                    <button onclick="bukaLayanan('tv')"
+                    </a>
+                    <a href="{{ route('layanan.tv') }}"
                         class="flex flex-col items-center gap-2 focus:outline-none group cursor-pointer">
                         <div
                             class="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform mx-auto">
                             <i data-lucide="tv" class="w-4 h-4"></i>
                         </div>
                         <span class="text-[9px] font-bold text-slate-400">TV & Internet</span>
-                    </button>
+                    </a>
                     <a href="{{ route('akun.index') }}"
                         class="flex flex-col items-center gap-2 focus:outline-none group cursor-pointer">
                         <div
@@ -470,7 +470,7 @@
                 <button onclick="closeModal('modalPulsa')"
                     class="bg-white/[0.08] hover:bg-white/[0.14] rounded-lg w-7 h-7 text-slate-400 hover:text-white flex items-center justify-center text-sm transition-all focus:outline-none cursor-pointer">&times;</button>
             </div>
-            <form action="#" method="POST" id="formPulsa" class="space-y-4">
+            <form action="{{ route('layanan.pulsa.store') }}" method="POST" id="formPulsa" class="space-y-4">
                 @csrf
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Nomor Handphone
@@ -571,7 +571,7 @@
                 <button onclick="closeModal('modalPLN')"
                     class="bg-white/[0.08] hover:bg-white/[0.14] rounded-lg w-7 h-7 text-slate-400 hover:text-white flex items-center justify-center text-sm transition-all focus:outline-none cursor-pointer">&times;</button>
             </div>
-            <form action="#" method="POST" id="formPLN" class="space-y-4">
+            <form action="{{ route('layanan.pln.store') }}" method="POST" id="formPLN" class="space-y-4">
                 @csrf
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Nomor Meter / ID
@@ -636,7 +636,7 @@
                 <button onclick="closeModal('modalTVInternet')"
                     class="bg-white/[0.08] hover:bg-white/[0.14] rounded-lg w-7 h-7 text-slate-400 hover:text-white flex items-center justify-center text-sm transition-all focus:outline-none cursor-pointer">&times;</button>
             </div>
-            <form action="#" method="POST" id="formTV" class="space-y-4">
+            <form action="{{ route('layanan.tv.store') }}" method="POST" id="formTV" class="space-y-4">
                 @csrf
                 <div class="flex flex-col gap-1.5">
                     <label class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Pilih Penyedia
@@ -1036,12 +1036,25 @@
         ============================== */
         document.addEventListener('DOMContentLoaded', function() {
 
+            // Auto open modal from query param (open_modal)
+            const urlParams = new URLSearchParams(window.location.search);
+            const openModalParam = urlParams.get('open_modal');
+            if (openModalParam) {
+                if (openModalParam === 'qris' && typeof window.openQrisModal === 'function') {
+                    window.openQrisModal();
+                } else if (typeof bukaLayanan === 'function') {
+                    bukaLayanan(openModalParam);
+                }
+                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({ path: newUrl }, '', newUrl);
+            }
+
             // Pulsa
             const formPulsa = document.getElementById('formPulsa');
             if (formPulsa) formPulsa.addEventListener('submit', function(e) {
-                e.preventDefault();
                 const phone = document.getElementById('pulsaPhone').value;
                 if (phone.length < 10) {
+                    e.preventDefault();
                     return Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
@@ -1055,25 +1068,14 @@
                     });
                 }
                 closeModal('modalPulsa');
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Pembelian Berhasil!',
-                    text: 'Pulsa berhasil dikirim ke ' + phone + '.',
-                    confirmButtonColor: '#0052ff',
-                    background: '#0d0f12',
-                    color: '#fff',
-                    customClass: {
-                        popup: 'rounded-2xl border border-white/10'
-                    }
-                });
             });
 
             // PLN
             const formPLN = document.getElementById('formPLN');
             if (formPLN) formPLN.addEventListener('submit', function(e) {
-                e.preventDefault();
                 const meter = document.getElementById('plnMeter').value;
                 if (meter.length < 8) {
+                    e.preventDefault();
                     return Swal.fire({
                         icon: 'error',
                         title: 'Gagal',
@@ -1086,29 +1088,15 @@
                         }
                     });
                 }
-                const token = Array.from({
-                    length: 5
-                }, () => Math.floor(1000 + Math.random() * 9000)).join(' - ');
                 closeModal('modalPLN');
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Token PLN Sukses!',
-                    html: `<p class="text-sm text-slate-400">Token kamu:</p><p class="text-xl font-bold tracking-wider font-mono bg-yellow-500/10 text-yellow-400 p-3 rounded-lg border border-yellow-500/20 mt-2 select-all">${token}</p>`,
-                    confirmButtonColor: '#eab308',
-                    background: '#0d0f12',
-                    color: '#fff',
-                    customClass: {
-                        popup: 'rounded-2xl border border-white/10'
-                    }
-                });
             });
 
             // TV
             const formTV = document.getElementById('formTV');
             if (formTV) formTV.addEventListener('submit', function(e) {
-                e.preventDefault();
                 const cust = document.getElementById('tvCustomerNo').value;
                 if (cust.length < 6) {
+                    e.preventDefault();
                     return Swal.fire({
                         icon: 'error',
                         title: 'Gagal',
@@ -1122,17 +1110,6 @@
                     });
                 }
                 closeModal('modalTVInternet');
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Pembayaran Lunas!',
-                    text: 'Tagihan No. ' + cust + ' berhasil dibayar!',
-                    confirmButtonColor: '#6366f1',
-                    background: '#0d0f12',
-                    color: '#fff',
-                    customClass: {
-                        popup: 'rounded-2xl border border-white/10'
-                    }
-                });
             });
 
             // Backdrop

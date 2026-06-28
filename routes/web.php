@@ -13,6 +13,7 @@ use App\Http\Controllers\TransactionMobileController;
 use App\Http\Controllers\CicilanController;
 use App\Http\Controllers\SavingGoalController;
 use App\Http\Controllers\AnalysisController;
+use App\Http\Controllers\PilihanLayananController;
 
 use App\Http\Controllers\HelpdeskController;
 /*
@@ -77,6 +78,13 @@ Route::get('/transfer', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/layanan/pulsa', [PilihanLayananController::class, 'pulsa'])->name('layanan.pulsa');
+    Route::post('/layanan/pulsa', [PilihanLayananController::class, 'storePulsa'])->name('layanan.pulsa.store');
+    Route::get('/layanan/pln', [PilihanLayananController::class, 'pln'])->name('layanan.pln');
+    Route::post('/layanan/pln', [PilihanLayananController::class, 'storePln'])->name('layanan.pln.store');
+    Route::get('/layanan/tv', [PilihanLayananController::class, 'tv'])->name('layanan.tv');
+    Route::post('/layanan/tv', [PilihanLayananController::class, 'storeTv'])->name('layanan.tv.store');
+
     Route::post('/topup', [TransactionController::class, 'topup'])->name('topup.store');
     Route::post('/qris', [TransactionController::class, 'qris'])->name('qris.store');
     Route::post('/qris/scan', [TransactionController::class, 'scan'])->name('scan.store');

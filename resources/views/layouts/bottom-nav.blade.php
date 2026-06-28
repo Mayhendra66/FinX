@@ -11,10 +11,10 @@
     </a>
 
     <div class="-mt-8">
-        <button type="button" onclick="bukaModalCreate()" class="bg-primary-container text-white p-3 rounded-full shadow-lg flex items-center justify-center hover:bg-primary-container/90 transition-colors cursor-pointer">
-            <span class="material-symbols-outlined text-[24px]">add</span>
-        </button>
-    </div>
+    <button type="button" onclick="handleQrButton()" class="bg-primary-container text-white p-3 rounded-full shadow-lg flex items-center justify-center hover:bg-sky-400 hover:shadow-[0_0_15px_rgba(56,189,248,0.6)] transition-all duration-300 cursor-pointer">
+        <span class="material-symbols-outlined text-[30px]">qr_code_2</span>
+    </button>
+</div>
 
     <a class="flex flex-col items-center gap-1 p-2 {{ request()->routeIs('analysis.index') ? 'text-primary dark:text-primary-fixed' : 'text-on-surface-variant dark:text-surface-variant' }}" href="{{ route('analysis.index') }}">
         <span class="material-symbols-outlined {{ request()->routeIs('analysis.index') ? 'fill' : '' }}" {{ request()->routeIs('analysis.index') ? 'data-weight=fill' : '' }}>analytics</span>
@@ -27,72 +27,18 @@
     </a>
 </nav>
 
-{{-- ==============================
-     MODAL CREATE GLOBAL
-============================== --}}
-<div id="modal_create" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-md p-6 relative shadow-2xl">
-        <h2 class="text-base font-bold text-white mb-4 flex items-center gap-2">
-            <span class="p-1.5 rounded bg-emerald-500/10 text-emerald-400">+</span>
-            Tambah Data Transaksi
-        </h2>
-
-        <form id="form_add_transaction" class="space-y-4 text-xs">
-            @csrf
-
-            <div>
-                <label class="block text-neutral-300 font-semibold mb-1">Tipe</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <label class="border border-neutral-800 bg-neutral-950 p-2 text-center rounded-lg cursor-pointer block">
-                        <input type="radio" name="type" id="create_type_income" value="income" class="mr-1" checked> Pemasukan
-                    </label>
-                    <label class="border border-neutral-800 bg-neutral-950 p-2 text-center rounded-lg cursor-pointer block">
-                        <input type="radio" name="type" id="create_type_expense" value="expense" class="mr-1"> Pengeluaran
-                    </label>
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-neutral-300 font-semibold mb-1">Pilih Rekening Dompet</label>
-                <select name="account_id" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-white">
-                    @if(isset($accounts))
-                        @foreach($accounts as $account)
-                            <option value="{{ $account->id }}">{{ $account->name }}</option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-neutral-300 font-semibold mb-1">Jumlah Nominal (Rupiah)</label>
-                <input type="text" id="create_amount" name="amount" required placeholder="Contoh: Rp 150.000" oninput="formatIDR(this)" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-white">
-            </div>
-
-            <div>
-                <label class="block text-neutral-300 font-semibold mb-1">Kategori</label>
-                <select id="create_category" name="category_id" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-white">
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-neutral-300 font-semibold mb-1">Tanggal Transaksi</label>
-                <input type="date" name="transaction_date" required value="{{ date('Y-m-d') }}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-white">
-            </div>
-
-            <div>
-                <label class="block text-neutral-300 font-semibold mb-1">Deskripsi / Catatan</label>
-                <textarea name="note" placeholder="Tulis catatan di sini..." class="w-full bg-neutral-950 border border-neutral-800 rounded-lg p-2.5 text-white h-16"></textarea>
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="tutupModalCreate()" class="cursor-pointer px-4 py-2 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300">Batal</button>
-                <button type="button" onclick="submitCreate()" class="cursor-pointer px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white font-bold">Simpan Transaksi</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
+// Handler untuk tombol QR di bottom nav
+function handleQrButton() {
+    // Jika berada di halaman dashboard (modal QRIS tersedia)
+    if (document.getElementById('qrisModal') && typeof window.openQrisModal === 'function') {
+        window.openQrisModal();
+    } else {
+        // Redirect ke dashboard dengan parameter open_modal=qris
+        window.location.href = "{{ route('dashboard') }}?open_modal=qris";
+    }
+}
+
 // 1. Inisialisasi Data Kategori Global dari Blade
 const globalCategories = @json($categories ?? []);
 
@@ -138,6 +84,19 @@ document.addEventListener('DOMContentLoaded', function() {
             background: '#17181c',
             color: '#fff',
             confirmButtonColor: '#0052ff',
+            customClass: { popup: 'border border-neutral-800 rounded-xl' }
+        });
+    @endif
+
+    // Auto-display session error dari backend jika ada redirect murni
+    @if(session('error'))
+        Swal.fire({
+            title: 'Gagal!',
+            text: "{{ session('error') }}",
+            icon: 'error',
+            background: '#17181c',
+            color: '#fff',
+            confirmButtonColor: '#ef4444',
             customClass: { popup: 'border border-neutral-800 rounded-xl' }
         });
     @endif
